@@ -28,6 +28,11 @@ function createWindow() {
   })
   win.loadFile(path.join(__dirname, 'renderer', 'index.html'))
   win.once('ready-to-show', () => win.show())
+  win.webContents.openDevTools({ mode: 'detach' })
+  win.webContents.on('before-input-event', (_, input) => {
+    if (input.control && input.shift && input.key.toLowerCase() === 'i')
+      win.webContents.toggleDevTools()
+  })
 }
 
 app.whenReady().then(() => {
@@ -45,7 +50,7 @@ ipcMain.handle('open-file', async () => {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     properties: ['openFile'],
     filters: [
-      { name: 'Text Files', extensions: ['txt', 'md', 'log'] },
+      { name: 'Text Files', extensions: ['txt', 'md', 'log', 'rtf', 'rtt', 'csv', 'json'] },
       { name: 'All Files', extensions: ['*'] }
     ]
   })

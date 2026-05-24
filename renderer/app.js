@@ -69,12 +69,13 @@ async function openFile() {
 }
 
 async function loadFile(filePath, name, text) {
+  console.log('[loadFile] name:', name, 'text length:', text ? text.length : 'null/undefined')
   currentFile = filePath
-  content.textContent = text
+  content.textContent = text || '(empty file)'
   fileNameEl.textContent = name
   document.title = name + ' — Reader'
-  dropZone.hidden = true
-  readerWrap.hidden = false
+  dropZone.style.display = 'none'
+  readerWrap.style.display = 'block'
   hideHover()
 
   const pos = await window.api.getPosition(filePath)
@@ -97,30 +98,38 @@ function placeHoverBox(selRect) {
 }
 
 async function showHover(word, selRect) {
+  console.log('[showHover] word:', word, 'api:', typeof window.api)
   pendingWord = word
   hoverVisible = true
   hoverWordLabel.textContent = word.length > 40 ? word.slice(0, 40) + '…' : word
   hoverTransEl.textContent = '…'
-  hoverBox.hidden = false
+  hoverBox.style.display = 'block'
   placeHoverBox(selRect)
+  console.log('[showHover] box displayed at', hoverBox.style.left, hoverBox.style.top)
 
   const s = getSettings()
-  const result = await window.api.translate(word, s.langFrom, s.langTo)
+  try {
+    const result = await window.api.translate(word, s.langFrom, s.langTo)
+    console.log('[showHover] translate result:', result)
 
-  if (!hoverVisible || pendingWord !== word) return
+    if (!hoverVisible || pendingWord !== word) return
 
-  if (result.ok) {
-    hoverTransEl.textContent = result.text
-    wordbookData = await window.api.addWord(word, result.text)
-    renderWordbook()
-  } else {
-    hoverTransEl.textContent = '— ' + result.text
+    if (result.ok) {
+      hoverTransEl.textContent = result.text
+      wordbookData = await window.api.addWord(word, result.text)
+      renderWordbook()
+    } else {
+      hoverTransEl.textContent = '— ' + result.text
+    }
+  } catch (err) {
+    console.error('[showHover] translate error:', err)
+    hoverTransEl.textContent = '— error'
   }
 }
 
 function hideHover() {
   hoverVisible = false
-  hoverBox.hidden = true
+  hoverBox.style.display = 'none'
   hoverSettings.hidden = true
 }
 
@@ -175,7 +184,7 @@ themeToggle.addEventListener('click', () => {
 
 wordbookBtn.addEventListener('click', () => {
   wordbookOpen = !wordbookOpen
-  wordbookPanel.hidden = !wordbookOpen
+  wordbookPanel.style.display = wordbookOpen ? 'flex' : 'none'
   wordbookBtn.classList.toggle('active', wordbookOpen)
 })
 
@@ -188,20 +197,27 @@ wordbookList.addEventListener('click', async e => {
 
 // Text selection → translate on mouse release
 document.addEventListener('mouseup', e => {
-  if (hoverBox.contains(e.target)) return
-
   const sel = window.getSelection()
   const word = sel ? sel.toString().trim() : ''
+  console.log('[mouseup] target:', e.target.id || e.target.tagName, 'word:', JSON.stringify(word), 'currentFile:', currentFile)
 
-  if (!word || word.length < 2 || !currentFile) {
-    if (!hoverBox.contains(e.target)) hideHover()
+  if (hoverBox.contains(e.target)) return
+
+  if (!word) { hideHover(); return }
+
+  if (!currentFile) {
+    console.warn('[mouseup] no file open — open a file first')
     return
   }
 
   try {
-    const rect = sel.getRangeAt(0).getBoundingClientRect()
+    const range = sel.getRangeAt(0)
+    const rect = range.getBoundingClientRect()
+    console.log('[mouseup] calling showHover, rect:', Math.round(rect.left), Math.round(rect.top))
     showHover(word, rect)
-  } catch { /* ignore selection edge cases */ }
+  } catch (err) {
+    console.error('[mouseup] error:', err)
+  }
 })
 
 // Hide hover on click outside
@@ -253,7 +269,7 @@ document.addEventListener('drop', e => {
   const file = e.dataTransfer.files[0]
   if (!file) return
   const reader = new FileReader()
-  reader.onload = () => loadFile(file.path, file.name, reader.result)
+  reader.onload = () => loadFile(file.path || file.name, file.name, reader.result)
   reader.readAsText(file)
 })
 

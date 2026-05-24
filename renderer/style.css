@@ -95,6 +95,11 @@ body {
   overflow: hidden;
 }
 
+/* Elements hidden by default — shown via style.display in JS */
+#reader-wrap   { display: none; }
+#wordbook-panel { display: none; }
+#hover-box     { display: none; }
+
 /* ── Drop zone ── */
 #drop-zone {
   flex: 1;
