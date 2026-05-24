@@ -4,7 +4,7 @@
   "description": "Language-learning txt file reader",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
+    "start": "node launch.js",
     "build": "electron-builder --win --publish never"
   },
   "build": {
