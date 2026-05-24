@@ -1,0 +1,12 @@
+{
+  "name": "reader",
+  "version": "1.0.0",
+  "description": "Minimal desktop txt file reader",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^35.0.0"
+  }
+}

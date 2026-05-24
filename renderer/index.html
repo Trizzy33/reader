@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Reader</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="toolbar">
+    <button id="open-btn">Open</button>
+    <span id="file-name"></span>
+    <div class="spacer"></div>
+    <button id="wordbook-btn" title="Word book (W)">📖 Wordbook</button>
+    <div class="font-controls">
+      <button id="font-dec" title="Smaller text">A−</button>
+      <button id="font-inc" title="Larger text">A+</button>
+    </div>
+    <button id="theme-toggle" title="Toggle theme">☾</button>
+  </div>
+
+  <div id="app-body">
+    <div id="drop-zone">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      <p>Drop a text file here</p>
+      <p class="hint">or click <strong>Open</strong> to browse</p>
+    </div>
+
+    <div id="reader-wrap" hidden>
+      <pre id="content"></pre>
+    </div>
+
+    <div id="wordbook-panel" hidden>
+      <div id="wordbook-header">
+        <span>Word Book</span>
+        <span id="word-count" class="badge">0</span>
+      </div>
+      <div id="wordbook-list"></div>
+    </div>
+  </div>
+
+  <!-- Translation hover box -->
+  <div id="hover-box" hidden>
+    <div id="hover-top">
+      <span id="hover-word-label"></span>
+      <button id="hover-settings-btn" title="Hover settings">⚙</button>
+    </div>
+    <div id="hover-translation">…</div>
+    <div id="hover-settings" hidden>
+      <label>
+        <span>Opacity</span>
+        <input type="range" id="opacity-slider" min="20" max="100" value="95">
+        <span id="opacity-val" class="val-label">95%</span>
+      </label>
+      <label>
+        <span>Text size</span>
+        <input type="range" id="text-size-slider" min="11" max="24" value="14">
+        <span id="text-size-val" class="val-label">14px</span>
+      </label>
+      <div class="lang-row">
+        <label>From <input type="text" id="lang-from" value="en" maxlength="12"></label>
+        <label>To &nbsp; <input type="text" id="lang-to" value="zh" maxlength="12"></label>
+      </div>
+      <p class="lang-hint">Language codes: en, zh, es, fr, ja, ko, de…<br>Use "auto" for auto-detect source.</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
